@@ -1,43 +1,17 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const session = require('express-session');
+const express = require("express");
+const bodyParser = require("body-parser");
 
-const customer_routes = require('./router/auth_users.js').authenticated;
-const genl_routes = require('./router/general.js').general;
+const general_routes = require("./general.js").general;
+const customer_routes = require("./auth_users.js").authenticated;
 
 const app = express();
+
+app.use(bodyParser.json());
+app.use("/customer", customer_routes);
+app.use("/", general_routes);
+
 const PORT = 5000;
 
-// Middleware to parse JSON bodies
-app.use(express.json());
-
-// Session configuration middleware
-app.use("/customer", session({
-  secret: "fingerprint_customer",
-  resave: true,
-  saveUninitialized: true
-}));
-
-// Authentication middleware for protected routes
-app.use("/customer/auth/*", function auth(req, res, next) {
-  if (req.session && req.session.authorization) {
-    const token = req.session.authorization.accessToken;
-
-    jwt.verify(token, "access", (err, user) => {
-      if (err) {
-        return res.status(403).json({ message: "User not authenticated" });
-      }
-      req.user = user;
-      next();
-    });
-  } else {
-    return res.status(403).json({ message: "User not logged in" });
-  }
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-// Routes
-app.use("/customer", customer_routes);
-app.use("/", genl_routes);
-
-// Start the server
-app.listen(PORT, () => console.log("Server is running"));
