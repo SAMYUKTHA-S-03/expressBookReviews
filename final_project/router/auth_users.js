@@ -6,7 +6,7 @@ let users = [];
 
 const regd_users = express.Router();
 
-// Add a new user
+
 regd_users.post("/register", (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ message: "Missing credentials" });
@@ -18,7 +18,7 @@ regd_users.post("/register", (req, res) => {
   return res.status(201).json({ message: "User registered successfully" });
 });
 
-// Login and generate JWT
+
 regd_users.post("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -30,7 +30,7 @@ regd_users.post("/login", (req, res) => {
   return res.status(200).json({ message: "Login successful", token });
 });
 
-// Middleware for token validation
+
 function verifyToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   if (!authHeader) return res.status(401).json({ message: "Authorization header missing" });
@@ -46,7 +46,7 @@ function verifyToken(req, res, next) {
   });
 }
 
-// Task 8: Add or update review
+
 regd_users.put("/auth/review/:isbn", verifyToken, (req, res) => {
   const isbn = req.params.isbn;
   const review = req.body.review;
@@ -60,7 +60,7 @@ regd_users.put("/auth/review/:isbn", verifyToken, (req, res) => {
   return res.status(200).json({ message: "Review successfully added/updated." });
 });
 
-// Task 9: Delete review
+
 regd_users.delete("/auth/review/:isbn", verifyToken, (req, res) => {
   const isbn = req.params.isbn;
   const username = req.user.username;
